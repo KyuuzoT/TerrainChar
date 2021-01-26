@@ -6,12 +6,15 @@ using UnityEngine;
 public class FirstPersonController : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
+    [SerializeField] private MouseLook mouseLook;
     private CharacterController controller;
-    [SerializeField] private float speed = 5.0f;
-    [SerializeField] private float sensivity = 3.0f;
+
+    [SerializeField] private float walkingSpeed = 5.0f;
+    [SerializeField] private float sprintSpeed = 10.0f;
     [SerializeField] private float verticalSpeed = 5.0f;
     [SerializeField] private float jumpForce = 5.0f;
-    [SerializeField] private float stickToGroundForce = 5.0f;
+    private float jumpAxis { get; set; }
+    private float currentSpeed { get; set; }
 
     [SerializeField] private float bulletSpeed = 30.0f;
     [SerializeField] private float shootingTimer = 5.0f;
@@ -19,9 +22,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private Transform bullet;
     [SerializeField] private Transform bulletBirthPoint;
     private bool isRecharging => shootingTimer > 0;
-    private float jumpAxis { get; set; }
-    private bool isJump { get; set; }
-    private bool isJumping { get; set; }
 
     // Start is called before the first frame update
     void Awake()
@@ -31,16 +31,17 @@ public class FirstPersonController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    private void Start()
+    {
+        mouseLook.Init(controller, cameraTransform);
+    }
+
     // Update is called once per frame
     void Update()
     {
         RotateToLookDiraction();
-        if(!isJump)
-        {
-            isJump = Input.GetKeyDown(KeyCode.Space);
-            stickToGroundForce = 0.0f;
-        }
-        //jumpAxis = Input.GetAxis("Jump");
+
+        jumpAxis = Input.GetAxis("Jump");
 
         if(shootingTimer > 0)
         {
@@ -51,12 +52,6 @@ public class FirstPersonController : MonoBehaviour
             }
         }
         Shoot();
-
-        if (controller.isGrounded)
-        {
-            isJumping = false;
-        }
-        //MoveCharacter();
     }
 
     private void Shoot()
@@ -75,27 +70,28 @@ public class FirstPersonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MoveCharacter();
+        currentSpeed = walkingSpeed;
+        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            currentSpeed = sprintSpeed;
+        }
+        MoveCharacter(currentSpeed);
     }
 
-    private void MoveCharacter()
+    private void MoveCharacter(float movementSpeed)
     {
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
 
-        Vector3 transferVector = (transform.forward * vertical * speed + transform.right * horizontal * speed) * Time.fixedDeltaTime;
+        Vector3 transferVector = (transform.forward * vertical * movementSpeed + transform.right * horizontal * movementSpeed) * Time.fixedDeltaTime;
         verticalSpeed = controller.velocity.y;
         verticalSpeed += Physics.gravity.y * Time.fixedDeltaTime;
 
         if(controller.isGrounded)
         {
-            transferVector.y = -stickToGroundForce;
-            if (isJump)
+            if (jumpAxis > 0)
             {
                 verticalSpeed = jumpForce;
-                isJump = false;
-                isJumping = true;
-                stickToGroundForce = 5;
             }
         }
 
@@ -106,10 +102,6 @@ public class FirstPersonController : MonoBehaviour
 
     private void RotateToLookDiraction()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
-
-        controller.transform.Rotate(Vector3.up, mouseX * sensivity);
-        cameraTransform.Rotate(Vector3.right, -mouseY * sensivity, Space.Self);
+        mouseLook.LookRotation(controller, cameraTransform);
     }
 }
