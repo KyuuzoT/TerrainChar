@@ -11,6 +11,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float sensivity = 3.0f;
     [SerializeField] private float verticalSpeed = 5.0f;
     [SerializeField] private float jumpForce = 5.0f;
+    [SerializeField] private float stickToGroundForce = 5.0f;
 
     [SerializeField] private float bulletSpeed = 30.0f;
     [SerializeField] private float shootingTimer = 5.0f;
@@ -18,7 +19,9 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private Transform bullet;
     [SerializeField] private Transform bulletBirthPoint;
     private bool isRecharging => shootingTimer > 0;
-    
+    private float jumpAxis { get; set; }
+    private bool isJump { get; set; }
+    private bool isJumping { get; set; }
 
     // Start is called before the first frame update
     void Awake()
@@ -32,6 +35,12 @@ public class FirstPersonController : MonoBehaviour
     void Update()
     {
         RotateToLookDiraction();
+        if(!isJump)
+        {
+            isJump = Input.GetKeyDown(KeyCode.Space);
+            stickToGroundForce = 0.0f;
+        }
+        //jumpAxis = Input.GetAxis("Jump");
 
         if(shootingTimer > 0)
         {
@@ -42,6 +51,11 @@ public class FirstPersonController : MonoBehaviour
             }
         }
         Shoot();
+
+        if (controller.isGrounded)
+        {
+            isJumping = false;
+        }
         //MoveCharacter();
     }
 
@@ -69,17 +83,23 @@ public class FirstPersonController : MonoBehaviour
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
 
-        Vector3 transferVector = (transform.forward * vertical * speed + transform.right * horizontal * speed) * Time.deltaTime;
+        Vector3 transferVector = (transform.forward * vertical * speed + transform.right * horizontal * speed) * Time.fixedDeltaTime;
         verticalSpeed = controller.velocity.y;
-        verticalSpeed += Physics.gravity.y * Time.deltaTime;
+        verticalSpeed += Physics.gravity.y * Time.fixedDeltaTime;
 
-        float jumpAxis = Input.GetAxis("Jump");
-        if (jumpAxis > 0 && controller.isGrounded)
+        if(controller.isGrounded)
         {
-            verticalSpeed = jumpForce;
+            transferVector.y = -stickToGroundForce;
+            if (isJump)
+            {
+                verticalSpeed = jumpForce;
+                isJump = false;
+                isJumping = true;
+                stickToGroundForce = 5;
+            }
         }
 
-        transferVector += transform.up * verticalSpeed * Time.deltaTime;
+        transferVector += transform.up * verticalSpeed * Time.fixedDeltaTime;
 
         controller.Move(transferVector);
     }
