@@ -7,7 +7,8 @@ public class FirstPersonController : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private MouseLook mouseLook;
-    private CharacterController controller;
+    [SerializeField] private PlayerSounds playerSounds;
+    private CharacterController controller { get; set; }
 
     [SerializeField] private float walkingSpeed = 5.0f;
     [SerializeField] private float sprintSpeed = 10.0f;
@@ -23,6 +24,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private Transform bulletBirthPoint;
     private bool isRecharging => shootingTimer > 0;
 
+    private bool isInAir { get; set; }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -34,6 +37,7 @@ public class FirstPersonController : MonoBehaviour
     private void Start()
     {
         mouseLook.Init(controller, cameraTransform);
+        playerSounds.Init(controller);
     }
 
     // Update is called once per frame
@@ -54,6 +58,16 @@ public class FirstPersonController : MonoBehaviour
         Shoot();
     }
 
+    private void FixedUpdate()
+    {
+        currentSpeed = walkingSpeed;
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            currentSpeed = sprintSpeed;
+        }
+        MoveCharacter(currentSpeed);
+    }
+
     private void Shoot()
     {
         float fireAxis = Input.GetAxis("Fire1");
@@ -68,15 +82,6 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        currentSpeed = walkingSpeed;
-        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-        {
-            currentSpeed = sprintSpeed;
-        }
-        MoveCharacter(currentSpeed);
-    }
 
     private void MoveCharacter(float movementSpeed)
     {
@@ -92,6 +97,7 @@ public class FirstPersonController : MonoBehaviour
             if (jumpAxis > 0)
             {
                 verticalSpeed = jumpForce;
+                isInAir = true;
             }
         }
 
