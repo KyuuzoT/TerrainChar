@@ -33,7 +33,6 @@ public class MouseLook
 
     private float ClampAngle(float mouseY)
     {
-        Debug.Log(Mathf.Clamp(mouseY, minRadians, maxRadians));
         return Mathf.Clamp(mouseY, minRadians, maxRadians);
     }
 }

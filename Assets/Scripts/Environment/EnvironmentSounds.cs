@@ -12,7 +12,7 @@ namespace Scripts.Environment
         [SerializeField] private AudioSource audioSrc;
 
 
-        internal void Init(AudioSource source) => Init(source);
+        internal void Init(AudioSource source) => InternalInit(source);
         internal void PlayForestSound() => InternalPlayForestSound();
         internal void PlayWaterSound() => InternalPlayWaterSound();
         internal void PlayMountainSound() => InternalPlayMountainSound();

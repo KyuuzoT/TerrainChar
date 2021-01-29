@@ -2,7 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GlobalSounding : MonoBehaviour
+namespace Scripts.Environment
 {
-    [SerializeField] 
+    public class GlobalSounding : MonoBehaviour
+    {
+        [SerializeField] private EnvironmentSounds sounds;
+        private AudioSource audioSource;
+
+        private void Awake()
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
+        private void Start()
+        {
+            sounds.Init(audioSource);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log(other);
+        }
+    }
 }
