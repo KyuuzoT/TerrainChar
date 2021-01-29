@@ -3,12 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private MouseLook mouseLook;
     [SerializeField] private PlayerSounds playerSounds;
     private CharacterController controller { get; set; }
+
+    [Header("Movement preferences")]
+    [SerializeField] private float stepTimer = 0.0f;
+    [SerializeField] private float stepRecharge = 1.25f;
+    private bool isStepWait => stepTimer > 0;
 
     [SerializeField] private float walkingSpeed = 5.0f;
     [SerializeField] private float sprintSpeed = 10.0f;
@@ -17,6 +24,7 @@ public class FirstPersonController : MonoBehaviour
     private float jumpAxis { get; set; }
     private float currentSpeed { get; set; }
 
+    [Header("Shooting preferences")]
     [SerializeField] private float bulletSpeed = 30.0f;
     [SerializeField] private float shootingTimer = 5.0f;
     [SerializeField] private float rechargeTime = 5.0f;
@@ -43,7 +51,7 @@ public class FirstPersonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RotateToLookDiraction();
+        RotateToLookDirection();
 
         jumpAxis = Input.GetAxis("Jump");
 
@@ -65,7 +73,23 @@ public class FirstPersonController : MonoBehaviour
         {
             currentSpeed = sprintSpeed;
         }
+
+        if(stepTimer > 0)
+        {
+            stepTimer -= Time.fixedDeltaTime;
+            if(stepTimer <= 0)
+            {
+                stepTimer = 0;
+            }
+        }
+
         MoveCharacter(currentSpeed);
+
+        if(controller.isGrounded && isInAir)
+        {
+            isInAir = false;
+            playerSounds.PlayLandingSound();
+        }
     }
 
     private void Shoot()
@@ -97,16 +121,38 @@ public class FirstPersonController : MonoBehaviour
             if (jumpAxis > 0)
             {
                 verticalSpeed = jumpForce;
+                playerSounds.PlayJumpingSound();
                 isInAir = true;
             }
         }
 
         transferVector += transform.up * verticalSpeed * Time.fixedDeltaTime;
-
         controller.Move(transferVector);
+
+        if(!isInAir && controller.velocity.sqrMagnitude > 0)
+        {
+            PlayStepsSound();
+        }
     }
 
-    private void RotateToLookDiraction()
+    private void PlayStepsSound()
+    {
+        if(!isStepWait && controller.isGrounded)
+        {
+            if (currentSpeed < sprintSpeed)
+            {
+                stepTimer = stepRecharge;
+            }
+            else if (currentSpeed >= sprintSpeed)
+            {
+                stepTimer = stepRecharge * (walkingSpeed/sprintSpeed);
+            }
+
+            playerSounds.PlayWalkingSound();
+        }
+    }
+
+    private void RotateToLookDirection()
     {
         mouseLook.LookRotation(controller, cameraTransform);
     }

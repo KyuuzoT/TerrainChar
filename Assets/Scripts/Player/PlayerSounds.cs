@@ -1,15 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
-public class PlayerSounds : MonoBehaviour
+[RequireComponent(typeof(AudioSource))]
+[Serializable]
+public class PlayerSounds
 {
+    [Header("Sounds")]
     [SerializeField] private Sounds sounds;
-    private AudioSource audioSrc;
+    [SerializeField] private AudioSource audioSrc;
     private CharacterController controller;
 
     internal void Init(CharacterController controller) => InternalInit(controller);
-    internal void PlayLendingSound() => InternalPlayLandingSound();
+    internal void PlayLandingSound() => InternalPlayLandingSound();
     internal void PlayJumpingSound() => InternalPlayJumpingSound();
     internal void PlayWalkingSound() => InternalPlayWalkingSounds();
     internal void PlaySprintingSound() => InternalPlaySprintingSounds();
@@ -26,6 +31,11 @@ public class PlayerSounds : MonoBehaviour
 
     private void InternalPlayJumpingSound()
     {
+        if (!controller.isGrounded)
+        {
+            return;
+        }
+
         audioSrc.clip = sounds.jumpSound;
         audioSrc.Play();
     }
@@ -36,22 +46,31 @@ public class PlayerSounds : MonoBehaviour
         {
             return;
         }
-
-        audioSrc.clip = sounds.landingSound;
-        audioSrc.Play();
+        Random rnd = new Random();
+        int i = rnd.Next(1, sounds.walkingSounds.Length);
+        audioSrc.clip = sounds.walkingSounds[i];
+        audioSrc.PlayOneShot(audioSrc.clip);
+        sounds.walkingSounds[i] = sounds.walkingSounds[0];
+        sounds.walkingSounds[0] = audioSrc.clip;
     }
 
     private void InternalPlaySprintingSounds()
     {
+        if (!controller.isGrounded)
+        {
+            return;
+        }
+
         audioSrc.clip = sounds.landingSound;
         audioSrc.Play();
     }
 
+    [SerializeField]
     private struct Sounds
     {
-        internal AudioClip jumpSound;
-        internal AudioClip landingSound;
-        internal AudioClip[] walkingSounds;
-        internal AudioClip[] sprintSounds;
+        [SerializeField] internal AudioClip jumpSound;
+        [SerializeField] internal AudioClip landingSound;
+        [SerializeField] internal AudioClip[] walkingSounds;
+        [SerializeField] internal AudioClip[] sprintSounds;
     }
 }

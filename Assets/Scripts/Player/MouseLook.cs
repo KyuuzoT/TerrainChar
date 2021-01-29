@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class MouseLook
 {
+    [Header("Mouse Look")]
     private Quaternion characterRotation;
     private Quaternion cameraRotation;
     [SerializeField] private float sensivity = 3.0f;
