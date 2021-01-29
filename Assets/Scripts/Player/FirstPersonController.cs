@@ -103,6 +103,7 @@ public class FirstPersonController : MonoBehaviour
             bulletRB.transform.rotation = bulletBirthPoint.rotation;
 
             bulletRB.AddForce(bulletRB.transform.forward * bulletSpeed, ForceMode.Impulse);
+            playerSounds.PlayShootingSound();
             shootingTimer = rechargeTime;
         }
     }

@@ -1010,10 +1010,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: a4614d986ffe15d43a29a6ec668fca1e, type: 3}
       - {fileID: 8300000, guid: 3d2ecbf897337be428b9358bc16aca8b, type: 3}
       - {fileID: 8300000, guid: 8513d2b516688a74aae2d3af4d04aa3b, type: 3}
-      sprintSounds:
-      - {fileID: 8300000, guid: a4614d986ffe15d43a29a6ec668fca1e, type: 3}
-      - {fileID: 8300000, guid: 3d2ecbf897337be428b9358bc16aca8b, type: 3}
-      - {fileID: 8300000, guid: 8513d2b516688a74aae2d3af4d04aa3b, type: 3}
+      shotSound: {fileID: 8300000, guid: bc9977035f8e6b440a2783cef1e93564, type: 3}
     audioSrc: {fileID: 168213738}
   stepTimer: 0
   stepRecharge: 0.5

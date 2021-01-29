@@ -16,7 +16,7 @@ public class PlayerSounds
     internal void PlayLandingSound() => InternalPlayLandingSound();
     internal void PlayJumpingSound() => InternalPlayJumpingSound();
     internal void PlayWalkingSound() => InternalPlayWalkingSounds();
-    internal void PlaySprintingSound() => InternalPlaySprintingSounds();
+    internal void PlayShootingSound() => InternalPlayShotSound();
     private void InternalInit(CharacterController controller)
     {
         this.controller = controller;
@@ -48,15 +48,10 @@ public class PlayerSounds
         sounds.walkingSounds[0] = audioSrc.clip;
     }
 
-    private void InternalPlaySprintingSounds()
+    private void InternalPlayShotSound()
     {
-        if (!controller.isGrounded)
-        {
-            return;
-        }
-
-        audioSrc.clip = sounds.landingSound;
-        audioSrc.Play();
+        audioSrc.clip = sounds.shotSound;
+        audioSrc.PlayOneShot(audioSrc.clip);
     }
 
     [Serializable]
@@ -65,6 +60,6 @@ public class PlayerSounds
         [SerializeField] internal AudioClip jumpSound;
         [SerializeField] internal AudioClip landingSound;
         [SerializeField] internal AudioClip[] walkingSounds;
-        [SerializeField] internal AudioClip[] sprintSounds;
+        [SerializeField] internal AudioClip shotSound;
     }
 }
