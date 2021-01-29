@@ -21,7 +21,22 @@ namespace Scripts.Environment
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log(other);
+            if(other.tag.Equals("Trees"))
+            {
+                sounds.PlayForestSound();
+            }
+            if(other.tag.Equals("Waters"))
+            {
+                sounds.PlayWaterSound();
+            }
+            if(other.tag.Equals("Mountain"))
+            {
+                sounds.PlayMountainSound();
+            }
+            if(other.tag.Equals("Stairs"))
+            {
+                sounds.PlayStairsSound();
+            }
         }
     }
 }
