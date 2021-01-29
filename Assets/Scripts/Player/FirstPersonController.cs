@@ -88,6 +88,7 @@ public class FirstPersonController : MonoBehaviour
         if(controller.isGrounded && isInAir)
         {
             isInAir = false;
+            stepTimer = stepRecharge;
             playerSounds.PlayLandingSound();
         }
     }
@@ -129,7 +130,7 @@ public class FirstPersonController : MonoBehaviour
         transferVector += transform.up * verticalSpeed * Time.fixedDeltaTime;
         controller.Move(transferVector);
 
-        if(!isInAir && controller.velocity.sqrMagnitude > 0)
+        if (!isInAir && controller.velocity.sqrMagnitude > 0)
         {
             PlayStepsSound();
         }

@@ -8,7 +8,6 @@ using Random = System.Random;
 [Serializable]
 public class PlayerSounds
 {
-    [Header("Sounds")]
     [SerializeField] private Sounds sounds;
     [SerializeField] private AudioSource audioSrc;
     private CharacterController controller;
@@ -31,11 +30,6 @@ public class PlayerSounds
 
     private void InternalPlayJumpingSound()
     {
-        if (!controller.isGrounded)
-        {
-            return;
-        }
-
         audioSrc.clip = sounds.jumpSound;
         audioSrc.Play();
     }
@@ -65,7 +59,7 @@ public class PlayerSounds
         audioSrc.Play();
     }
 
-    [SerializeField]
+    [Serializable]
     private struct Sounds
     {
         [SerializeField] internal AudioClip jumpSound;
