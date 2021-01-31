@@ -8,6 +8,7 @@ TagManager:
   - Waters
   - Mountain
   - Stairs
+  - Bullet
   layers:
   - Default
   - TransparentFX

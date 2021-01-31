@@ -25,13 +25,15 @@ public class PlayerSounds
     private void InternalPlayLandingSound()
     {
         audioSrc.clip = sounds.landingSound;
-        audioSrc.Play();
+        audioSrc.PlayOneShot(audioSrc.clip);
+        //audioSrc.Play();
     }
 
     private void InternalPlayJumpingSound()
     {
         audioSrc.clip = sounds.jumpSound;
-        audioSrc.Play();
+        audioSrc.PlayOneShot(audioSrc.clip);
+        //audioSrc.Play();
     }
 
     private void InternalPlayWalkingSounds()

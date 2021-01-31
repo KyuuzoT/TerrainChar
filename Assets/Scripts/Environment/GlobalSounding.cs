@@ -8,20 +8,26 @@ namespace Scripts.Environment
     {
         [SerializeField] private EnvironmentSounds sounds;
         private AudioSource audioSource;
+        private AudioSource audioSourceMountain;
+        private AudioSource audioSourceWater;
+        private AudioSource audioSourceStairs;
 
         private void Awake()
         {
-            audioSource = GetComponent<AudioSource>();
+
         }
 
         private void Start()
         {
-            sounds.Init(audioSource);
+            //sounds.Init(audioSource);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.tag.Equals("Trees"))
+            audioSource = other.GetComponent<AudioSource>();
+            sounds.Init(audioSource);
+
+            if (other.tag.Equals("Trees"))
             {
                 sounds.PlayForestSound();
             }

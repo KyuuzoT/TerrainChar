@@ -23,6 +23,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float jumpForce = 5.0f;
     private float jumpAxis { get; set; }
     private float currentSpeed { get; set; }
+    private float previousVelocityY { get; set; } = default;
+    private float deltaVelocityY { get; set; } = default;
 
     [Header("Shooting preferences")]
     [SerializeField] private float bulletSpeed = 30.0f;
@@ -33,6 +35,9 @@ public class FirstPersonController : MonoBehaviour
     private bool isRecharging => shootingTimer > 0;
 
     private bool isInAir { get; set; }
+
+    internal float destroyedTargets { get; set; } = default;
+    [SerializeField] private Transform targets;
 
     // Start is called before the first frame update
     void Awake()
@@ -111,15 +116,25 @@ public class FirstPersonController : MonoBehaviour
 
     private void MoveCharacter(float movementSpeed)
     {
+        deltaVelocityY = controller.velocity.y - previousVelocityY;
+        previousVelocityY = controller.velocity.y;
+
+        if(Mathf.Abs(deltaVelocityY) > 1 && !isInAir)
+        {
+            previousVelocityY -= deltaVelocityY;
+        }
+
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
 
         Vector3 transferVector = (transform.forward * vertical * movementSpeed + transform.right * horizontal * movementSpeed) * Time.fixedDeltaTime;
-        verticalSpeed = controller.velocity.y;
+        verticalSpeed = previousVelocityY;
+
         verticalSpeed += Physics.gravity.y * Time.fixedDeltaTime;
 
         if(controller.isGrounded)
         {
+            verticalSpeed -= 5.0f;
             if (jumpAxis > 0)
             {
                 verticalSpeed = jumpForce;
