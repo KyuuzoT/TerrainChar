@@ -12,6 +12,8 @@ namespace Scripts.Targets
             {
                 Debug.Log(gameObject);
                 Destroy(gameObject, 2.0f);
+                FirstPersonController.destroyedTargets++;
+                Debug.Log($"Destroyed: {FirstPersonController.destroyedTargets}");
             }
         }
     }

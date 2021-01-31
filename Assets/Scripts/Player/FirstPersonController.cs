@@ -36,7 +36,7 @@ public class FirstPersonController : MonoBehaviour
 
     private bool isInAir { get; set; }
 
-    internal float destroyedTargets { get; set; } = default;
+    internal static int destroyedTargets { get; set; } = default;
     [SerializeField] private Transform targets;
 
     // Start is called before the first frame update
@@ -69,6 +69,12 @@ public class FirstPersonController : MonoBehaviour
             }
         }
         Shoot();
+            
+        if(destroyedTargets >= 75)
+        {
+            var trg = Instantiate(targets);
+            destroyedTargets = 0;
+        }
     }
 
     private void FixedUpdate()
